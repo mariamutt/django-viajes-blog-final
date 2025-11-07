@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 rounded-3 p-4 p-md-5">
+            <header class="text-center mb-5">
+                <div class="bg-primary text-white mx-auto d-flex align-items-center justify-content-center mb-3 rounded-circle" style="width: 100px; height: 100px;">
+                    <i class="fas fa-user-circle fa-4x"></i>
+                </div>
+                <h1 class="display-5 fw-bold text-primary">{{ user.username }}</h1>
+                <p class="lead text-muted">Miembro de la comunidad de viajeros.</p>
+            </header>
+
+            <section class="user-details mb-5">
+                <h3 class="text-secondary border-bottom pb-2 mb-4"><i class="fas fa-info-circle me-2"></i> Información de la Cuenta</h3>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <p class="fw-bold mb-1">Email:</p>
+                        <p class="text-muted">{{ user.email|default:"No especificado" }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <p class="fw-bold mb-1">Nombre Completo:</p>
+                        <p class="text-muted">{{ user.get_full_name|default:"No especificado" }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <p class="fw-bold mb-1">Fecha de Registro:</p>
+                        <p class="text-muted">{{ user.date_joined|date:"d M, Y" }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <p class="fw-bold mb-1">Último Login:</p>
+                        <p class="text-muted">{{ user.last_login|date:"d M, Y H:i" }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="user-actions text-center">
+                <a href="{% url 'travels:list' %}?author={{ user.username }}" class="btn btn-outline-primary btn-lg rounded-pill me-3">
+                    <i class="fas fa-plane me-2"></i> Ver Mis Posts
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg rounded-pill">
+                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                </a>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Acerca de Mí{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg p-4">
+            <h1 class="text-center text-primary mb-4"><i class="fas fa-info-circle me-2"></i> Acerca de MiBlog</h1>
+            
+            <div class="text-center mb-4">
+                <!-- Placeholder de imagen que luego podríamos reemplazar con una foto real -->
+                <div class="bg-secondary rounded-circle d-inline-block p-5" style="width: 150px; height: 150px;">
+                    <i class="fas fa-user-tie text-white fa-4x"></i>
+                </div>
+            </div>
+
+            <p class="lead text-center">
+                Este blog es el proyecto final de la cursada de Python/Django. Fue diseñado para cumplir con todos los requisitos funcionales, incluyendo un sistema robusto de autenticación, una aplicación principal con CRUD completo y un módulo de mensajería privado.
+            </p>
+
+            <hr>
+
+            <h3 class="text-secondary mt-4">Características Clave Implementadas</h3>
+            <ul>
+                <li>**Estructura Modular:** Separación de lógica en las apps `travels`, `accounts` e `inbox`.</li>
+                <li>**CRUD Completo:** Vistas para Crear, Leer, Actualizar y Eliminar Artículos de Viaje.</li>
+                <li>**Autenticación Segura:** Manejo de Login, Logout y Registro.</li>
+                <li>**Herencia de Templates:** Uso de `base.html` para un diseño consistente (NavBar y Footer).</li>
+                <li>**Diseño Responsivo:** Implementación de Bootstrap para una experiencia móvil amigable.</li>
+            </ul>
+            
+            <hr>
+
+            <h3 class="text-secondary mt-4">Contacto</h3>
+            <p>Si tienes preguntas sobre el código o la implementación del proyecto, puedes contactarme a través de la funcionalidad de mensajería o enviando un mensaje directo a través de:</p>
+            <p class="text-center">
+                <a href="#" class="btn btn-outline-dark me-2"><i class="fab fa-github me-2"></i> Mi GitHub</a>
+                <a href="#" class="btn btn-outline-info"><i class="fas fa-envelope me-2"></i> Enviar Mensaje</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

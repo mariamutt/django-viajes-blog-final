@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ travelpost.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <article class="bg-white p-4 p-md-5 rounded-3 shadow-lg mb-5">
+            <header class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">{{ travelpost.title }}</h1>
+                <p class="text-muted lead">
+                    <i class="fas fa-map-marker-alt me-2"></i> {{ travelpost.location }}
+                </p>
+                <div class="text-secondary small">
+                    Publicado por **{{ travelpost.author.username }}** el {{ travelpost.created_at|date:"d M, Y" }}
+                </div>
+            </header>
+
+            <!-- Imagen Principal -->
+            {% if travelpost.image %}
+            <figure class="mb-5 rounded-3 overflow-hidden shadow">
+                <!-- Aseguramos que la imagen se vea bien -->
+                <img src="{{ travelpost.image.url }}" class="img-fluid w-100" alt="{{ travelpost.title }}" style="max-height: 500px; object-fit: cover;">
+                <figcaption class="text-center text-muted p-2 border-top">
+                    Foto capturada en {{ travelpost.location }}
+                </figcaption>
+            </figure>
+            {% endif %}
+
+            <!-- Contenido del Post -->
+            <section class="post-content fs-5 text-dark lh-base">
+                <!-- Usamos linebreaks para respetar los saltos de línea ingresados por el usuario -->
+                {{ travelpost.content|linebreaks }}
+            </section>
+            
+            <hr class="my-5">
+
+            <!-- Acciones del Usuario (Editar/Eliminar) -->
+            <!-- Solo se muestra si el usuario logeado es el autor del post -->
+            {% if user.is_authenticated and user == travelpost.author %}
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'travels:update' slug=travelpost.slug %}" class="btn btn-warning"><i class="fas fa-edit me-1"></i> Editar</a>
+                <a href="{% url 'travels:delete' slug=travelpost.slug %}" class="btn btn-danger"><i class="fas fa-trash-alt me-1"></i> Eliminar</a>
+            </div>
+            {% endif %}
+        </article>
+        
+        <div class="text-center mb-5">
+            <a href="{% url 'travels:list' %}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Volver a la Lista de Posts</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

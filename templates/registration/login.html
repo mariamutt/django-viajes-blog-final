@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg p-4 rounded-3">
+            <h1 class="text-center text-primary mb-4"><i class="fas fa-sign-in-alt me-2"></i> Inicia Sesión</h1>
+            <p class="text-center text-muted">Accede a tu cuenta para compartir tus viajes.</p>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario (credenciales incorrectas) -->
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Tus credenciales (nombre de usuario/contraseña) son incorrectas. Por favor, intenta de nuevo.
+                </div>
+                {% endif %}
+
+                <!-- Campos de usuario y contraseña -->
+                {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                
+                <!-- Campo oculto para la redirección post-login -->
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                {% endif %}
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                        Acceder <i class="fas fa-lock-open ms-2"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">¿No tienes cuenta? <a href="{% url 'accounts:signup' %}">Regístrate aquí.</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
