@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    {% if post %}
+        <article class="bg-white rounded-4 shadow-lg p-lg-5 p-4 border-top border-primary border-5">
+            
+            <!-- Título y metadatos -->
+            <header class="mb-5 border-bottom pb-3">
+                <h1 class="display-3 fw-bold text-dark mb-2">{{ post.title }}</h1>
+                <div class="text-muted small d-flex flex-wrap align-items-center">
+                    <span class="me-3">
+                        <i class="fas fa-user me-1"></i> Autor: 
+                        <!-- Enlace al perfil del autor usando el nombre de usuario -->
+                        <a href="{% url 'profiles:detail' username=post.author.username %}" class="text-decoration-none text-primary fw-semibold">{{ post.author.username }}</a>
+                    </span>
+                    <span class="me-3">
+                        <i class="fas fa-calendar-alt me-1"></i> Publicado: {{ post.created_at|date:"d M Y" }}
+                    </span>
+                    <span>
+                        <i class="fas fa-map-marker-alt me-1"></i> Ubicación: {{ post.location }}
+                    </span>
+                </div>
+            </header>
+
+            <!-- Imagen Principal -->
+            {% if post.image %}
+                <figure class="mb-5">
+                    <img src="{{ post.image.url }}" class="img-fluid rounded-3 shadow-sm w-100" alt="Imagen principal de {{ post.title }}" style="max-height: 500px; object-fit: cover;">
+                    {% if post.image_caption %}
+                        <figcaption class="text-center text-muted mt-2 small">{{ post.image_caption }}</figcaption>
+                    {% endif %}
+                </figure>
+            {% else %}
+                <div class="bg-light text-muted d-flex align-items-center justify-content-center mb-5 rounded-3" style="height: 300px;">
+                    <i class="fas fa-camera fa-4x me-2"></i> No hay imagen principal para esta aventura.
+                </div>
+            {% endif %}
+
+            <!-- Contenido del Post -->
+            <section class="post-content fs-5 text-secondary">
+                <p>{{ post.content|linebreaksbr }}</p>
+            </section>
+            
+            <!-- Opciones de Edición/Eliminación (solo para el autor) -->
+            {% if user.is_authenticated and user == post.author %}
+                <div class="mt-5 text-end">
+                    <a href="{% url 'travels:update' slug=post.slug %}" class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'travels:delete' slug=post.slug %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </a>
+                </div>
+            {% endif %}
+
+        </article>
+
+        <!-- Botón de regreso -->
+        <div class="text-center mt-5">
+            <a href="{% url 'travels:list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Volver a todas las aventuras
+            </a>
+        </div>
+
+    {% else %}
+        <!-- Mensaje de 404 (Aunque la vista de detalle ya debería manejar esto) -->
+        <div class="alert alert-danger text-center mt-5 p-5 rounded-4">
+            <h4 class="alert-heading">Aventura no encontrada (404)</h4>
+            <p>Lo sentimos, la aventura que buscas ya no existe o la URL es incorrecta.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,47 +1,72 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm 
-from django.contrib import messages 
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib import messages
 
-# 1. Vista de Registro (Signup)
-def signup(request):
-    """
-    Maneja la lógica de registro de nuevos usuarios.
-    """
+# Vista para el Registro de Usuarios (Signup)
+def signup_view(request):
     if request.method == 'POST':
-        # Instancia el formulario con los datos recibidos
+        # Instancia el formulario con los datos del POST
         form = UserCreationForm(request.POST)
         if form.is_valid():
             # Guarda el nuevo usuario
-            form.save()
-            username = form.cleaned_data.get('username')
-            # Envía un mensaje de éxito al usuario
-            messages.success(request, f'¡Cuenta creada exitosamente para {username}! Ya puedes iniciar sesión.')
-            # Redirige a la página de login (la URL 'login' está definida por django.contrib.auth.urls)
-            return redirect('login') 
+            user = form.save()
+            # Inicia sesión automáticamente con el nuevo usuario
+            login(request, user)
+            messages.success(request, f"¡Bienvenido, {user.username}! Tu cuenta ha sido creada.")
+            # Redirige a la página principal o donde sea apropiado
+            return redirect('/') 
+        else:
+            # Si el formulario no es válido, muestra errores.
+            messages.error(request, "Error al crear la cuenta. Por favor, revisa el formulario.")
     else:
-        # Crea un formulario vacío si es una petición GET
+        # Si es una solicitud GET, muestra el formulario vacío
         form = UserCreationForm()
-        
-    # Renderiza la plantilla de registro
-    return render(request, 'registration/signup.html', {'form': form})
-
-# 2. Vista de Perfil
-@login_required 
-def profile(request):
-    """
-    Renderiza la página de perfil del usuario.
-    """
-    # Renderiza la plantilla de perfil, pasando el objeto 'user' que ya está en el contexto
-    return render(request, 'accounts/profile.html')
-
-# 3. Personalización del Login (opcional, incluido por completitud)
-class CustomLoginView(LoginView):
-    template_name = 'registration/login.html'
     
-    def get_success_url(self):
-        # Redirigir al inicio después de un login exitoso y usar el sistema de mensajes
-        messages.success(self.request, f'¡Bienvenido de nuevo, {self.request.user.username}!')
-        return reverse_lazy('home')
+    # Renderiza la plantilla con el formulario
+    return render(request, 'accounts/signup.html', {'form': form})
+
+
+# Vista para el Inicio de Sesión (Login)
+def login_view(request):
+    if request.method == 'POST':
+        # Instancia el formulario de autenticación con los datos del POST
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            # Autentica al usuario
+            user = form.get_user()
+            # Inicia sesión
+            login(request, user)
+            messages.success(request, f"¡Has iniciado sesión como {user.username}!")
+            
+            # Revisa si hay un parámetro 'next' en la URL (para redirigir después del login)
+            if 'next' in request.POST:
+                return redirect(request.POST.get('next'))
+            else:
+                # Si no hay 'next', redirige a la página principal
+                return redirect('/')
+        else:
+            # Si el formulario no es válido
+            messages.error(request, "Nombre de usuario o contraseña incorrectos.")
+    else:
+        # Si es una solicitud GET, muestra el formulario vacío
+        form = AuthenticationForm()
+        
+    return render(request, 'accounts/login.html', {'form': form})
+
+
+# Vista para el Cierre de Sesión (Logout)
+# No necesita un formulario, solo la acción
+def logout_view(request):
+    if request.user.is_authenticated:
+        logout(request)
+        messages.info(request, "Has cerrado sesión correctamente.")
+    return redirect('/')
+
+
+# Vista de Perfil (requiere que el usuario esté logeado)
+@login_required 
+def profile_view(request):
+    # Ya sabemos que el usuario está logeado gracias al decorador @login_required
+    return render(request, 'accounts/profile.html')

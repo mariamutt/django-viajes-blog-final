@@ -1,35 +1,37 @@
 from django.urls import path
-# Importación explícita de todas las clases de vistas desde .views
 from .views import (
-    TravelPostListView,
-    TravelPostCreateView,
-    TravelPostDetailView,
-    TravelPostUpdateView,
-    TravelPostDeleteView
+    TravelPostListView, 
+    TravelPostDetailView, 
+    TravelPostCreateView, 
+    TravelPostUpdateView, 
+    TravelPostDeleteView,
+    user_post_list_view 
 )
 
-# Usamos 'app_name' para poder referenciar las rutas como 'travels:list', 'travels:create', etc.
 app_name = 'travels'
 
 urlpatterns = [
-    # R (Read) - Listado de posts
-    # Ruta: /posts/
-    # Usamos la clase importada directamente (sin 'views.')
-    path('', TravelPostListView.as_view(), name='list'), 
+    # 1. Rutas Fijas / Específicas
+    # DEBEN ir antes que la ruta de detalle con slug.
     
-    # C (Create) - Crear un nuevo post
-    # Ruta: /posts/create/
+    # 1.1 CREAR (Ruta /travels/create/)
     path('create/', TravelPostCreateView.as_view(), name='create'),
     
-    # R (Read) - Detalle de un post (Usa el SLUG para URL amigable)
-    # Ruta: /posts/<slug-del-post>/
+    # 1.2 POSTS DE USUARIO (Ruta /travels/usuario/1/posts/)
+    path('usuario/<int:user_id>/posts/', user_post_list_view, name='user_posts'),
+
+    # --------------------------------------------------------------------------------
+    # 2. Rutas Basadas en Slug (Acepta cualquier string, debe ir al final de las fijas)
+
+    # 2.1 DETALLE (Ruta /travels/mi-titulo-de-post/) - AHORA COINCIDE CORRECTAMENTE
     path('<slug:slug>/', TravelPostDetailView.as_view(), name='detail'),
     
-    # U (Update) - Editar un post existente (Usa el SLUG)
-    # Ruta: /posts/<slug-del-post>/edit/
-    path('<slug:slug>/edit/', TravelPostUpdateView.as_view(), name='update'),
+    # 2.2 ACTUALIZAR (Ruta /travels/mi-titulo-de-post/update/)
+    path('<slug:slug>/update/', TravelPostUpdateView.as_view(), name='edit'), 
     
-    # D (Delete) - Eliminar un post (Usa el SLUG)
-    # Ruta: /posts/<slug-del-post>/delete/
+    # 2.3 BORRAR (Ruta /travels/mi-titulo-de-post/delete/)
     path('<slug:slug>/delete/', TravelPostDeleteView.as_view(), name='delete'),
+
+    # 3. LISTADO GENERAL (Ruta /travels/) - Se deja al final o al inicio, ya que no tiene argumentos
+    path('', TravelPostListView.as_view(), name='list'), 
 ]

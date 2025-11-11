@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Explorar Viajeros{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">
+            <i class="fas fa-globe-americas me-2"></i> Explorar Viajeros
+        </h1>
+        <p class="lead text-muted">Encuentra a otros usuarios y sus aventuras.</p>
+    </header>
+
+    {% if users %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for user_obj in users %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 rounded-4 transition-hover">
+                    <div class="card-body text-center p-4">
+                        <!-- Imagen de Perfil -->
+                        <div class="mb-3">
+                            <a href="{% url 'profiles:detail' username=user_obj.username %}">
+                                <!-- La imagen se toma del perfil asociado al usuario -->
+                                <img src="{{ user_obj.profile.image.url }}" 
+                                     alt="Foto de perfil de {{ user_obj.username }}" 
+                                     class="img-fluid rounded-circle border border-primary border-2" 
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                            </a>
+                        </div>
+                        
+                        <!-- Nombre de Usuario -->
+                        <h5 class="card-title fw-bold mb-1">
+                            <a href="{% url 'profiles:detail' username=user_obj.username %}" class="text-decoration-none text-dark">
+                                {{ user_obj.username }}
+                            </a>
+                        </h5>
+                        
+                        <!-- Ubicación -->
+                        {% if user_obj.profile.location %}
+                        <p class="card-text small text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ user_obj.profile.location }}
+                        </p>
+                        {% endif %}
+                        
+                        <!-- Bio o Resumen -->
+                        <p class="card-text mt-3 mb-4 small text-truncate">
+                            {{ user_obj.profile.bio|default:"Aún no ha escrito su biografía." }}
+                        </p>
+                        
+                        <!-- Botón de Acción -->
+                        <a href="{% url 'profiles:detail' username=user_obj.username %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            Ver Perfil y Posts
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            No hay otros usuarios registrados en la plataforma.
+        </div>
+    {% endif %}
+    
+</div>
+
+<style>
+    /* Efecto de elevación al pasar el ratón */
+    .transition-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+{% endblock %}

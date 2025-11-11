@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4 sm:p-6 lg:p-8">
+<h1 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-2">
+<i class="fa-solid fa-envelope mr-3"></i>Tu Bandeja de Entrada
+</h1>
+
+{% if conversations %}
+    <div class="bg-white shadow-xl rounded-xl overflow-hidden divide-y divide-gray-200">
+        {% for conv in conversations %}
+            {% with other_user=conv.participant %}
+            <a href="{% url 'inbox:conversation_detail' username=other_user.username %}" class="block hover:bg-indigo-50 transition duration-150 ease-in-out">
+                <div class="p-4 sm:p-6 flex items-center">
+                    
+                    <!-- Columna 1: Avatar y Datos del Participante -->
+                    <div class="flex-shrink-0 mr-4">
+                        <!-- Placeholder para Avatar. Usamos un emoji o un icono de persona por defecto -->
+                        <div class="w-12 h-12 bg-indigo-200 rounded-full flex items-center justify-center text-xl text-indigo-700 font-semibold">
+                            {{ other_user.username.0|upper }}
+                        </div>
+                    </div>
+
+                    <!-- Columna 2: Último Mensaje y Participante -->
+                    <div class="flex-grow min-w-0">
+                        <div class="flex justify-between items-center">
+                            <p class="text-lg font-semibold text-gray-900 truncate">
+                                {{ other_user.get_full_name|default:other_user.username }}
+                                {% if conv.unread_count > 0 %}
+                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        {{ conv.unread_count }} sin leer
+                                    </span>
+                                {% endif %}
+                            </p>
+                            <p class="text-sm text-gray-500 flex-shrink-0 ml-4">
+                                {{ conv.last_message.timestamp|naturaltime }}
+                            </p>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-600 truncate">
+                            {% if conv.last_message.sender == request.user %}
+                                <span class="font-medium text-indigo-600">Tú:</span>
+                            {% endif %}
+                            {{ conv.last_message.content|slice:":50" }}{% if conv.last_message.content|length > 50 %}...{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </a>
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+        <i class="fa-solid fa-inbox text-6xl text-gray-400 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-900">Tu bandeja está vacía</h3>
+        <p class="mt-2 text-sm text-gray-500">
+            Aún no tienes mensajes. ¡Encuentra un viajero para empezar a chatear!
+        </p>
+        <!-- Puedes añadir un botón a la lista de usuarios o perfiles si existe -->
+        {# <div class="mt-6">
+            <a href="{% url 'profiles:user_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Buscar Viajeros
+            </a>
+        </div> #}
+    </div>
+{% endif %}
+
+{% comment %} Mensajes de Django (ej. 'Mensaje enviado.') {% endcomment %}
+{% if messages %}
+    <div class="mt-4">
+        {% for message in messages %}
+            <div class="p-4 rounded-lg text-sm {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-blue-100 text-blue-800{% endif %} mb-3" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+</div>
+{% endblock %}

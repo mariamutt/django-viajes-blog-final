@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Mensaje{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8 p-4 max-w-2xl">
+    <h1 class="text-3xl font-bold mb-6 border-b pb-2 text-gray-800">Enviar Nuevo Mensaje</h1>
+
+    <!-- Si estás usando el framework de mensajes de Django, inclúyelo aquí -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-4 rounded-lg 
+                    {% if message.tags == 'error' or message.tags == 'warning' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Formulario para buscar destinatario y escribir mensaje -->
+    <form method="POST" action="{% url 'inbox:new_thread' %}" class="bg-white p-6 rounded-xl shadow-lg space-y-4">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label for="id_receiver" class="block text-sm font-medium text-gray-700">Destinatario (Username):</label>
+            <!-- El name="receiver_username" es CRÍTICO para que views.py lo reconozca -->
+            <input type="text" id="id_receiver" name="receiver_username" 
+                   placeholder="Introduce el nombre de usuario"
+                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                   required>
+        </div>
+
+        <div class="mb-4">
+            <label for="id_content" class="block text-sm font-medium text-gray-700">Contenido del Mensaje:</label>
+            <!-- El name="content" es CRÍTICO para que views.py lo reconozca -->
+            <textarea id="id_content" name="content" rows="6" 
+                      placeholder="Escribe tu mensaje aquí..."
+                      class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none" 
+                      required></textarea>
+        </div>
+
+        <div class="flex justify-between items-center">
+            <a href="{% url 'inbox:list' %}" class="text-gray-600 hover:text-gray-800 transition duration-300">← Cancelar</a>
+            
+            <button type="submit" 
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
+                Enviar Mensaje
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

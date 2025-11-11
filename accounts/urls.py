@@ -1,13 +1,20 @@
 from django.urls import path
 from . import views
 
-# Definimos el nombre de la aplicación para evitar colisiones
-app_name = 'accounts' 
+# Definimos el namespace de la aplicación
+app_name = 'accounts'
 
 urlpatterns = [
-    # Ruta de Registro (signup). Por ahora, apunta a la función views.signup
-    path('signup/', views.signup, name='signup'),
+    # Mapea la vista de registro (signup)
+    path('signup/', views.signup_view, name='signup'),
     
-    # Ruta de Perfil (profile). 
-    path('profile/', views.profile, name='profile'),
+    # Mapea la vista de inicio de sesión (login)
+    # Nota: usamos 'login' como name para que coincida con la plantilla
+    path('login/', views.login_view, name='login'), 
+    
+    # Mapea la vista de cierre de sesión (logout)
+    path('logout/', views.logout_view, name='logout'), 
+    
+    # Mapea la vista de perfil (profile)
+    path('profile/', views.profile_view, name='profile'),
 ]

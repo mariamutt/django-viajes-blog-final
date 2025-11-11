@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Post: {{ object.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3 p-4">
+                
+                <!-- Encabezado de Advertencia -->
+                <div class="card-header bg-danger text-white text-center py-3 rounded-top">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Confirmar Eliminación</h4>
+                </div>
+                
+                <div class="card-body text-center">
+                    <p class="lead mt-3">
+                        Estás a punto de eliminar permanentemente el post:
+                    </p>
+                    
+                    <!-- CORRECCIÓN CLAVE: Usamos 'object.title' en lugar de 'travelpost.title' -->
+                    <h5 class="text-primary fw-bold mb-4">"{{ object.title }}"</h5>
+                    
+                    <p class="text-muted">
+                        Esta acción **no se puede deshacer**. ¿Estás absolutamente seguro de que deseas continuar?
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                            
+                            <!-- Botón de Confirmación -->
+                            <button type="submit" class="btn btn-danger btn-lg px-4">
+                                <i class="fas fa-trash-alt me-2"></i> Sí, Eliminar Permanentemente
+                            </button>
+                            
+                            <!-- Botón de Cancelar: Redirige al detalle del post -->
+                            <a href="{% url 'travels:detail' slug=object.slug %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

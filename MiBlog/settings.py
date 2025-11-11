@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # Aplicaciones de terceros
+    'widget_tweaks', 
     # Mis aplicaciones (Apps)
     # 1. travels: Maneja el modelo Post y el CRUD.
     'travels',
@@ -32,6 +33,8 @@ INSTALLED_APPS = [
     'accounts',
     # 3. inbox: Maneja la mensajería.
     'inbox',
+    'profiles', 
+
 ]
 
 MIDDLEWARE = [

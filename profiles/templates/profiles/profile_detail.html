@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Columna de Perfil Principal -->
+        <div class="col-lg-4 col-md-5">
+            <div class="card shadow-sm border-0 mb-4 sticky-top" style="top: 20px;">
+                <div class="card-body text-center">
+                    
+                    <!-- Foto de Perfil -->
+                    <img src="{{ profile.avatar.url }}" 
+                         alt="Foto de Perfil de {{ target_user.username }}" 
+                         class="rounded-circle mb-3 object-fit-cover" 
+                         style="width: 150px; height: 150px; border: 4px solid #4ade80;">
+
+                    <!-- Nombre de Usuario -->
+                    <h2 class="card-title fw-bold text-success">{{ target_user.username }}</h2>
+                    <p class="text-muted mb-3">{{ profile.location|default:"Ubicación no especificada" }}</p>
+                    
+                    <!-- Botón de Acción -->
+                    <div class="d-grid gap-2">
+                        {% if is_current_user %}
+                            <a href="{% url 'profiles:edit' %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square me-1"></i> Editar Perfil
+                            </a>
+                        {% else %}
+                            <!-- Si es otro usuario, aquí iría el botón de Seguir/Mensaje -->
+                            <button class="btn btn-outline-success btn-sm" disabled>
+                                <i class="bi bi-person-add me-1"></i> Seguir
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Información Adicional -->
+                <div class="card-footer bg-light border-0">
+                    <h5 class="fw-bold mb-2">Acerca de mí:</h5>
+                    <p class="card-text text-start small text-dark-emphasis">
+                        {% if profile.bio %}
+                            {{ profile.bio|linebreaksbr }}
+                        {% else %}
+                            Aún no ha escrito su biografía. ¡Anímate a editar tu perfil!
+                        {% endif %}
+                    </p>
+                    <hr>
+                    <ul class="list-unstyled small text-start">
+                        <li><i class="bi bi-envelope-fill me-2 text-primary"></i> {{ target_user.email }}</li>
+                        {% if profile.website %}
+                        <li><i class="bi bi-globe me-2 text-warning"></i> <a href="{{ profile.website }}" target="_blank" class="text-decoration-none">{{ profile.website }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna de Contenido y Posts -->
+        <div class="col-lg-8 col-md-7">
+            <h3 class="fw-bold mb-4 border-bottom pb-2">Posts Recientes ({{ target_user.travelpost_set.count }} en total)</h3>
+
+            {% if recent_posts %}
+                {% for post in recent_posts %}
+                    <div class="card shadow-sm mb-4 border-start border-4 border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title fw-semibold text-truncate"><a href="{% url 'travels:detail' post.pk %}" class="text-decoration-none text-dark">{{ post.title }}</a></h5>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="bi bi-clock me-1"></i> Publicado: {{ post.created_at|date:"d M, Y" }}
+                            </p>
+                            <p class="card-text">{{ post.content|striptags|truncatechars:150 }}</p>
+                            <a href="{% url 'travels:detail' post.pk %}" class="btn btn-outline-success btn-sm">Leer Más</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <!-- Enlace para ver todos los posts -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'travels:list' %}" class="btn btn-outline-secondary">Ver todos los posts de {{ target_user.username }}</a>
+                </div>
+
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    Este viajero aún no ha compartido ninguna aventura.
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
