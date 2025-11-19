@@ -6,7 +6,6 @@
 <div class="container mx-auto mt-8 p-4 max-w-4xl">
     <h1 class="text-3xl font-bold mb-6 border-b pb-2 text-gray-800">Tu Bandeja de Entrada</h1>
     
-    <!-- Si estás usando el framework de mensajes de Django, inclúyelo aquí -->
     {% if messages %}
         <div class="mb-4">
             {% for message in messages %}
@@ -19,17 +18,15 @@
     {% endif %}
 
 
-    <!-- Botón para iniciar un nuevo mensaje -->
     <div class="mb-6">
         <a href="{% url 'inbox:new_thread' %}" 
-           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
             + Nuevo Mensaje
         </a>
     </div>
 
     <div class="space-y-4">
         {% if conversations %}
-            <!-- El 'conversation' aquí es el ÚLTIMO mensaje del hilo -->
             {% for last_message in conversations %}
             
                 {% comment %} 
@@ -65,7 +62,6 @@
                         </div>
                         
                         <p class="mt-2 text-gray-600 text-sm italic truncate">
-                            <!-- Indica quién envió el último mensaje y muestra el contenido -->
                             {% if last_message.sender == request.user %}
                                 <span class="font-medium text-black">Tú:</span>
                             {% elif not last_message.is_read and last_message.receiver == request.user %}

@@ -6,7 +6,6 @@
 <div class="container mx-auto mt-8 p-4 max-w-2xl">
     <h1 class="text-3xl font-bold mb-6 border-b pb-2 text-gray-800">Enviar Nuevo Mensaje</h1>
 
-    <!-- Si estás usando el framework de mensajes de Django, inclúyelo aquí -->
     {% if messages %}
         <div class="mb-4">
             {% for message in messages %}
@@ -18,22 +17,19 @@
         </div>
     {% endif %}
 
-    <!-- Formulario para buscar destinatario y escribir mensaje -->
     <form method="POST" action="{% url 'inbox:new_thread' %}" class="bg-white p-6 rounded-xl shadow-lg space-y-4">
         {% csrf_token %}
         
         <div class="mb-4">
             <label for="id_receiver" class="block text-sm font-medium text-gray-700">Destinatario (Username):</label>
-            <!-- El name="receiver_username" es CRÍTICO para que views.py lo reconozca -->
             <input type="text" id="id_receiver" name="receiver_username" 
-                   placeholder="Introduce el nombre de usuario"
-                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                   required>
+                    placeholder="Introduce el nombre de usuario"
+                    class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    required>
         </div>
 
         <div class="mb-4">
             <label for="id_content" class="block text-sm font-medium text-gray-700">Contenido del Mensaje:</label>
-            <!-- El name="content" es CRÍTICO para que views.py lo reconozca -->
             <textarea id="id_content" name="content" rows="6" 
                       placeholder="Escribe tu mensaje aquí..."
                       class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none" 

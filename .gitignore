@@ -1,37 +1,16 @@
-# Archivo .gitignore para Proyecto Django
-
-# ----------------------------------------
-
-# 1. Entornos Virtuales (CRUCIAL: Son muy grandes y deben ser locales)
-
-# Incluye el nombre de tu entorno virtual (casi siempre 'venv' o '.venv')
-
-venv/
-.venv/
-env/
-
-# 2. Bases de Datos Locales
-
-# No queremos subir la base de datos SQLite de desarrollo
-
-db.sqlite3
-*.sqlite3 
-
-# 3. Archivos de Python y de caché
-
-# Archivos compilados de Python
-
-*.pyc 
+# Excluir archivos pesados y sensibles
+*.pyc
 __pycache__/
+*~
+.DS_Store
 
-# 4. Archivos generados por Django
+# CRÍTICO: Archivos de BD
+db.sqlite3
 
-# Carpetas para archivos multimedia y estáticos (los regeneramos en producción)
+# CRÍTICO: Archivos de Media
+media/
+/staticfiles/
 
-/media/
-/static_root/
-
-# 5. Archivos de Sistema Operativo
-
-.DS_Store # macOS
-Thumbs.db # Windows
+# Entornos Virtuales
+venv/
+.env

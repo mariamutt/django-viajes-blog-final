@@ -1,55 +1,71 @@
 {% extends "base.html" %}
 
-{% block title %}Perfil de Usuario{% endblock title %}
+{% block title %}Perfil de Usuario - {{ user.username }}{% endblock title %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <!-- El div principal del perfil debe ocupar un espacio moderado en la cuadrícula de Bootstrap -->
+        <div class="col-md-8 col-lg-6"> 
             
-            <header class="text-center mb-5">
-                <div class="display-3 text-primary mb-3">
-                    <i class="bi bi-person-circle"></i>
-                </div>
-                <h1 class="display-5 fw-bold">{{ request.user.username }}</h1>
-                <p class="lead text-muted">Información de tu cuenta y estadísticas de viaje.</p>
-            </header>
-
-            <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5">
-                <h3 class="mb-4 text-primary">Detalles de la Cuenta</h3>
+            <!-- Tarjeta de Perfil (usando clases de Tailwind que se verán como estilos en línea si Bootstrap lo permite) -->
+            <div class="bg-white rounded-xl shadow-2xl p-8 md:p-10 border border-indigo-100">
                 
-                <ul class="list-group list-group-flush mb-4">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Correo Electrónico:</span>
-                        <span>{{ request.user.email|default:"No registrado" }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Nombre Completo:</span>
-                        <span>{{ request.user.get_full_name|default:"No especificado" }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Se unió el:</span>
-                        <span>{{ request.user.date_joined|date:"d M Y" }}</span>
-                    </li>
-                </ul>
-
-                <h3 class="mb-3 text-primary">Tus Contribuciones</h3>
-                
-                <!-- Suponiendo que tienes un campo related_name='travel_posts' en el modelo User -->
-                <!-- Si el nombre del related_name no es 'travelpost_set', ajústalo aquí. -->
-                <p class="lead">Has publicado <strong>{{ request.user.travelpost_set.count }}</strong> aventuras hasta ahora.</p>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <a href="{% url 'travels:list' %}" class="btn btn-outline-secondary btn-lg rounded-pill">
-                        <i class="bi bi-compass me-2"></i> Ver mis posts
-                    </a>
-                    <!-- Dejé este botón deshabilitado hasta que creemos una vista de edición de perfil. -->
-                    <button class="btn btn-primary btn-lg rounded-pill" disabled>
-                        <i class="bi bi-gear-fill me-2"></i> Editar Perfil (Pendiente)
-                    </button>
+                <!-- Encabezado del Perfil -->
+                <div class="text-center mb-8">
+                    <!-- Avatar con la inicial del usuario -->
+                    <div class="w-24 h-24 mx-auto bg-primary text-white rounded-circle flex items-center justify-content-center text-4xl font-weight-bold shadow-lg ring-4 ring-indigo-200">
+                        {{ user.username|slice:"0:1"|upper }}
+                    </div>
+                    <h1 class="text-3xl font-weight-bold text-gray-900 mt-4">{{ user.username }}</h1>
+                    <p class="text-secondary font-weight-medium">¡Bienvenido(a) a tu Perfil!</p>
                 </div>
+
+                <!-- Información del Usuario -->
+                <div class="space-y-4">
+                    <!-- Correo Electrónico -->
+                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                        <i class="fas fa-envelope fa-2x text-primary me-3"></i>
+                        <div>
+                            <p class="mb-0 text-sm font-weight-semibold text-gray-600">Correo Electrónico</p>
+                            <p class="mb-0 text-lg font-weight-bold text-gray-800">{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <!-- ID de Usuario -->
+                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                        <i class="fas fa-id-badge fa-2x text-primary me-3"></i>
+                        <div>
+                            <p class="mb-0 text-sm font-weight-semibold text-gray-600">ID de Usuario</p>
+                            <p class="mb-0 text-lg font-weight-bold text-gray-800 break-all">{{ user.pk }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón de Edición (Asumo que tienes una URL llamada 'edit_profile') -->
+                    {% if user == request.user %}
+                    <div class="pt-2">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-primary w-100 py-2">
+                            <i class="fas fa-user-edit me-2"></i> Editar Perfil
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Botón de Cerrar Sesión (Logout) -->
+                <div class="mt-4 pt-4 border-top">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 py-2">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Mensaje de prueba de autenticación -->
+                {% if user.is_authenticated %}
+                <p class="text-center text-success mt-3 mb-0 small">Estado: Sesión iniciada correctamente.</p>
+                {% endif %}
             </div>
-
         </div>
     </div>
 </div>

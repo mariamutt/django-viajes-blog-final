@@ -21,7 +21,7 @@
                     <div class="card-body text-center p-4">
                         <!-- Imagen de Perfil -->
                         <div class="mb-3">
-                            <a href="{% url 'profiles:detail' username=user_obj.username %}">
+                            <a href="{% url 'profiles:user_detail' username=user_obj.username %}">
                                 <!-- La imagen se toma del perfil asociado al usuario -->
                                 <img src="{{ user_obj.profile.image.url }}" 
                                      alt="Foto de perfil de {{ user_obj.username }}" 
@@ -32,7 +32,7 @@
                         
                         <!-- Nombre de Usuario -->
                         <h5 class="card-title fw-bold mb-1">
-                            <a href="{% url 'profiles:detail' username=user_obj.username %}" class="text-decoration-none text-dark">
+                            <a href="{% url 'profiles:user_detail' username=user_obj.username %}" class="text-decoration-none text-dark">
                                 {{ user_obj.username }}
                             </a>
                         </h5>
@@ -50,7 +50,7 @@
                         </p>
                         
                         <!-- Botón de Acción -->
-                        <a href="{% url 'profiles:detail' username=user_obj.username %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        <a href="{% url 'profiles:user_detail' username=user_obj.username %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                             Ver Perfil y Posts
                         </a>
                     </div>

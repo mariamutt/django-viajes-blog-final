@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter para mejor legibilidad */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-lg bg-white shadow-xl rounded-2xl p-6 sm:p-10 border border-gray-100">
+
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-2">
+                    Mi Perfil
+                </h1>
+                <p class="text-gray-500 text-lg">Información de tu cuenta</p>
+            </div>
+
+            <!-- Contenedor principal de datos -->
+            <div class="space-y-6">
+                
+                <!-- Nombre de Usuario -->
+                <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <p class="text-sm font-semibold text-indigo-700">Nombre de Usuario</p>
+                    <!-- Django's user object is accessed via {{ user }} -->
+                    <p class="text-xl font-medium text-gray-800">{{ user.username }}</p>
+                </div>
+
+                <!-- Nombre Completo -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                    <p class="text-sm font-semibold text-gray-600">Nombre Completo</p>
+                    <p class="text-xl font-medium text-gray-800">
+                        <!-- Muestra el nombre y apellido si existen, si no, un placeholder -->
+                        {% if user.first_name or user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                            <span class="text-gray-400 italic">No especificado</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                    <p class="text-sm font-semibold text-gray-600">Correo Electrónico</p>
+                    <p class="text-xl font-medium text-gray-800">{{ user.email }}</p>
+                </div>
+                
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="mt-10 space-y-4">
+                
+                <!-- Botón para Editar Perfil (usando la URL 'accounts:profile_edit') -->
+                <a href="{% url 'accounts:profile_edit' %}" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 transform hover:scale-[1.01]">
+                    Editar Información Personal
+                </a>
+
+                <!-- Botón para Cambiar Contraseña (usando la URL 'accounts:change_password') -->
+                <a href="{% url 'accounts:change_password' %}" class="w-full inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                    Cambiar Contraseña
+                </a>
+            </div>
+            
+            <!-- Enlace para Volver a la Página Principal o Salir -->
+            <div class="mt-8 text-center">
+                <a href="{% url 'logout' %}" class="text-sm font-medium text-red-600 hover:text-red-700 transition duration-150">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

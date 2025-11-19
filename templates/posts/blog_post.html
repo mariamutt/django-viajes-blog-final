@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Viaje a las Montañas: La Serenidad en la Cima</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Importamos la fuente Inter de Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        /* Estilo para los comentarios cargados dinámicamente */
+        .comment-item {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <!-- Botón de regreso -->
+    <a href="/" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition duration-150 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="m15 18-6-6 6-6"/></svg>
+        Volver al Inicio
+    </a>
+
+    <!-- Contenedor Principal del Post -->
+    <div class="max-w-3xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden animate-fadeIn">
+
+        <!-- Imagen Destacada -->
+        <img class="w-full h-80 object-cover" src="https://placehold.co/1000x500/003366/FFFFFF?text=IMAGEN+DESTACADA+DE+MONTA%C3%91A" alt="Paisaje de montaña nevada.">
+
+        <!-- Contenido del Post -->
+        <article class="p-6 md:p-10">
+            <span class="inline-block bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 shadow-md">
+                Aventura
+            </span>
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">Mi viaje a las montañas: La serenidad en la cima</h1>
+            <p class="text-sm text-gray-500 mb-8">
+                Publicado por: Viajero | 8 de Noviembre, 2025 | Tiempo de lectura: 5 min.
+            </p>
+
+            <div class="prose max-w-none text-gray-700 space-y-6">
+                <p>
+                    Viajar a las montañas es una experiencia que transforma el alma. Es un escape necesario del ruido de la ciudad, una inmersión en la tranquilidad que solo la altura puede ofrecer. Cada paso en el sendero es un recordatorio de la magnificencia de la Tierra. El aire fresco, el silencio interrumpido solo por el viento y el canto de los pájaros, todo contribuye a una sensación de renovación total.
+                </p>
+                <p>
+                    Recomiendo encarecidamente buscar rutas poco transitadas. Al evitar las multitudes, se maximiza la conexión con el entorno natural. Lleva ropa adecuada, suficiente agua, y, por supuesto, una cámara. Pero más importante aún, lleva la mente abierta para absorber la paz.
+                </p>
+                <p class="text-xl italic font-semibold text-indigo-700 border-l-4 border-indigo-400 pl-4 py-2">
+                    "La montaña es el único lugar donde me siento completamente en el presente, libre de las distracciones del pasado y del futuro."
+                </p>
+                <p>
+                    Desde la cima, el mundo parece pequeño y los problemas se disipan. Es una perspectiva invaluable que recarga la energía para enfrentar el regreso a la vida cotidiana. ¿Te animas a tu próxima aventura en la montaña?
+                </p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Sección de Comentarios (Completamente Rediseñada) -->
+    <div class="max-w-3xl mx-auto mt-12 p-6 bg-white shadow-2xl rounded-3xl animate-fadeIn">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 border-b border-indigo-200 pb-3">Comentarios</h2>
+        
+        <!-- Lista de Comentarios Dinámicos -->
+        <div id="comments-list" class="space-y-6 mb-8">
+            <!-- Los comentarios se inyectan aquí con JavaScript -->
+            <p class="text-gray-500">Cargando comentarios...</p>
+        </div>
+
+        <!-- Formulario de Nuevo Comentario -->
+        <form id="comment-form" class="bg-indigo-50 p-6 rounded-2xl shadow-inner border border-indigo-100">
+            <h3 class="text-xl font-semibold text-indigo-700 mb-4">Deja tu Comentario</h3>
+            
+            <div class="mb-4">
+                <label for="authorName" class="block text-sm font-medium text-gray-700 mb-1">Tu Nombre (Opcional)</label>
+                <input type="text" id="authorName" placeholder="Viajero anónimo" class="w-full p-3 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+            </div>
+
+            <div class="mb-6">
+                <label for="commentText" class="block text-sm font-medium text-gray-700 mb-1">Mensaje *</label>
+                <textarea id="commentText" required rows="4" placeholder="¿Qué piensas de este post?" class="w-full p-3 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-none"></textarea>
+            </div>
+            
+            <button type="submit" class="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.02]">
+                Enviar Comentario
+            </button>
+            <div id="message-box" class="mt-4 text-center p-3 rounded-lg hidden"></div>
+        </form>
+    </div>
+
+    <!-- Bloque de Firebase y JavaScript -->
+    <script type="module">
+        // Globales del entorno de Canvas/Immersive
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Comprobación de configuración
+        if (!firebaseConfig) {
+            console.error("Firebase config is missing. Cannot initialize Firestore.");
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = "Error: Configuración de Firebase no disponible.";
+            msgBox.classList.remove('hidden');
+            msgBox.classList.add('bg-red-100', 'text-red-700');
+            document.getElementById('comment-form').style.display = 'none';
+        }
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, orderBy, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Usar setLogLevel para ver errores de Firebase
+        setLogLevel('debug');
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let userId = null;
+        let isAuthReady = false;
+
+        // Función para autenticación
+        async function authenticateUser() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+            }
+        }
+        
+        // Listener de estado de autenticación
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+            } else {
+                // Si el usuario se desautentica (poco probable en este entorno), asignamos un ID temporal
+                userId = crypto.randomUUID();
+            }
+            isAuthReady = true;
+            console.log("Auth Ready. User ID:", userId);
+            setupCommentListener();
+        });
+
+        // Iniciar el proceso de autenticación si no ha comenzado
+        if (!auth.currentUser) {
+            authenticateUser();
+        }
+
+        // --- LÓGICA DE FIREBASE Y UI ---
+
+        const commentsList = document.getElementById('comments-list');
+        const commentForm = document.getElementById('comment-form');
+        const messageBox = document.getElementById('message-box');
+
+        const COMMENTS_COLLECTION = `artifacts/${appId}/public/data/mountain_comments`;
+
+        function displayMessage(text, isError = false) {
+            messageBox.textContent = text;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            if (isError) {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                messageBox.classList.add('bg-green-100', 'text-green-700');
+            }
+        }
+
+        function renderComments(comments) {
+            commentsList.innerHTML = '';
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p class="text-gray-500 italic">Sé el primero en comentar esta publicación.</p>';
+                return;
+            }
+
+            comments.forEach(comment => {
+                const date = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleDateString() : 'Fecha Desconocida';
+                const time = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                
+                // Muestra solo los primeros 8 caracteres del ID
+                const displayUserId = comment.userId.substring(0, 8); 
+
+                const commentHtml = `
+                    <div class="comment-item bg-gray-50 p-4 rounded-xl shadow-inner border border-gray-200">
+                        <div class="flex items-center mb-2 border-b pb-2">
+                            <div class="bg-indigo-200 text-indigo-800 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-3">
+                                ${comment.authorName ? comment.authorName[0].toUpperCase() : 'A'}
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold text-gray-900">${comment.authorName || 'Anónimo'}</p>
+                                <p class="text-xs text-gray-500">ID Usuario: ${displayUserId}...</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 whitespace-pre-wrap">${comment.text}</p>
+                        <div class="text-right text-xs text-gray-400 pt-2 border-t mt-2">
+                            ${date} a las ${time}
+                        </div>
+                    </div>
+                `;
+                commentsList.innerHTML += commentHtml;
+            });
+        }
+
+        function setupCommentListener() {
+            if (!isAuthReady) return;
+
+            try {
+                // Consulta: Colección, ordenada por fecha (descendente).
+                // NOTA: Usar 'orderBy' puede requerir un índice compuesto en Firestore.
+                // Lo quitamos para priorizar la compatibilidad en este entorno.
+                const q = query(collection(db, COMMENTS_COLLECTION)); 
+
+                onSnapshot(q, (snapshot) => {
+                    const comments = [];
+                    snapshot.forEach(doc => {
+                        comments.push({ ...doc.data(), id: doc.id });
+                    });
+                    // Ordenar en cliente (si no se usa orderBy en la query)
+                    comments.sort((a, b) => b.timestamp?.seconds - a.timestamp?.seconds);
+                    renderComments(comments);
+                }, (error) => {
+                    console.error("Error al escuchar comentarios:", error);
+                    commentsList.innerHTML = '<p class="text-red-500 italic">Error al cargar los comentarios.</p>';
+                });
+            } catch (error) {
+                console.error("Error en setupCommentListener:", error);
+            }
+        }
+
+        // Manejar el envío del formulario
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!isAuthReady) {
+                displayMessage("Aún estamos autenticando. Por favor, espera un momento.", true);
+                return;
+            }
+
+            const authorName = document.getElementById('authorName').value.trim();
+            const commentText = document.getElementById('commentText').value.trim();
+
+            if (commentText.length === 0) {
+                displayMessage("El mensaje no puede estar vacío.", true);
+                return;
+            }
+
+            commentForm.querySelector('button').disabled = true;
+
+            try {
+                await addDoc(collection(db, COMMENTS_COLLECTION), {
+                    userId: userId,
+                    authorName: authorName || 'Anónimo',
+                    text: commentText,
+                    timestamp: serverTimestamp(),
+                });
+
+                document.getElementById('authorName').value = authorName; // Mantener el nombre del autor
+                document.getElementById('commentText').value = '';
+                displayMessage("¡Comentario enviado con éxito!", false);
+            } catch (error) {
+                console.error("Error al añadir documento:", error);
+                displayMessage("Error al enviar el comentario: " + error.message, true);
+            } finally {
+                commentForm.querySelector('button').disabled = false;
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Editar Perfil</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-semibold mb-2">
+                    {{ field.label }}
+                </label>
+                
+                {% if field.field.widget.input_type == 'file' %}
+                    <!-- Tratamiento específico para el campo de archivo (Perfil Imagen) -->
+                    <!-- Aplicamos estilos mínimos para no interferir con la interfaz nativa del explorador -->
+                    {{ field|add_class:"w-full leading-tight focus:outline-none focus:shadow-outline text-gray-700 p-0 bg-transparent shadow-none" }}
+                {% else %}
+                    <!-- Tratamiento general para campos de texto, email, etc. -->
+                    {{ field|add_class:"shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" }}
+                {% endif %}
+
+                {% if field.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out mt-6">
+            Guardar Cambios
+        </button>
+    </form>
+</div>
+{% endblock %}

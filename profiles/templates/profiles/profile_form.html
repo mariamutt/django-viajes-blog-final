@@ -1,81 +1,30 @@
-{% extends 'base.html' %}
-{% load static widget_tweaks %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}Editar Perfil{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i> {{ page_title }}</h3>
-                </div>
-                <div class="card-body p-4">
-
-                    <!-- Mensajes de Django (éxito/error) -->
-                    {% if messages %}
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-
-                        <!-- 1. Campo de Avatar (Imagen) -->
-                        <div class="mb-4">
-                            <label for="{{ form.avatar.id_for_label }}" class="form-label fw-bold">Foto de Perfil (Avatar)</label>
-                            {% if form.avatar.value %}
-                                <div class="mb-2">
-                                    <img src="{{ form.avatar.value.url }}" alt="Avatar actual" class="rounded-circle object-fit-cover" style="width: 80px; height: 80px;">
-                                    <span class="ms-3 text-muted small">Actual: {{ form.avatar.value.name|cut:"profiles/avatars/" }}</span>
-                                </div>
-                            {% endif %}
-                            
-                            <!-- Utiliza render_field para aplicar clases Bootstrap -->
-                            {% render_field form.avatar class="form-control" %}
-                            
-                            {% for error in form.avatar.errors %}
-                                <div class="invalid-feedback d-block">{{ error }}</div>
-                            {% endfor %}
-                            <div class="form-text">Sube una imagen cuadrada para mejores resultados.</div>
-                        </div>
-
-                        <!-- 2. Campo de Biografía -->
-                        <div class="mb-4">
-                            <label for="{{ form.bio.id_for_label }}" class="form-label fw-bold">Biografía</label>
-                            {% render_field form.bio class="form-control" rows="4" placeholder="Cuéntale al mundo sobre tus viajes y pasiones..." %}
-                            {% for error in form.bio.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                        </div>
-
-                        <!-- 3. Campo de Ubicación -->
-                        <div class="mb-4">
-                            <label for="{{ form.location.id_for_label }}" class="form-label fw-bold">Ubicación Actual o Principal</label>
-                            {% render_field form.location class="form-control" placeholder="Ej: Buenos Aires, Argentina" %}
-                            {% for error in form.location.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                        </div>
-
-                        <!-- 4. Campo de Sitio Web -->
-                        <div class="mb-4">
-                            <label for="{{ form.website.id_for_label }}" class="form-label fw-bold">Sitio Web / Enlace Personal</label>
-                            {% render_field form.website class="form-control" placeholder="https://tupagina.com" %}
-                            {% for error in form.website.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                        </div>
-
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-save me-2"></i> Guardar Cambios
-                            </button>
-                            <a href="{% url 'profiles:my_profile' %}" class="btn btn-outline-secondary">
-                                <i class="bi bi-x-circle me-2"></i> Cancelar
-                            </a>
-                        </div>
-                    </form>
-                </div>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Editar Perfil</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset class="mb-3">
+                        <legend class="border-bottom mb-3">Información de Usuario</legend>
+                        {{ u_form|crispy }}
+                    </fieldset>
+                    <fieldset class="mb-3">
+                        <legend class="border-bottom mb-3">Información de Perfil</legend>
+                        {{ p_form|crispy }}
+                    </fieldset>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info text-white">Actualizar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

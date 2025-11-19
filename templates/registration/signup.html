@@ -1,39 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}Registro de Usuario{% endblock %}
+{% block title %}Crear Cuenta{% endblock title %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-lg p-4 rounded-3">
-            <h1 class="text-center text-primary mb-4"><i class="fas fa-user-plus me-2"></i> Crea tu Cuenta</h1>
-            <p class="text-center text-muted">Únete a nuestra comunidad de viajeros en unos pocos pasos.</p>
-            
-            <form method="post" class="mt-4">
-                {% csrf_token %}
-                
-                <!-- Campos del formulario -->
-                {% for field in form %}
-                <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                {% endfor %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-2xl mt-10">
+    <h1 class="text-3xl font-bold text-center text-indigo-600 mb-6">Regístrate en MiBlogViajero</h1>
+    <p class="text-center text-gray-600 mb-8">Crea tu cuenta para comenzar a compartir tus aventuras.</p>
+    
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
 
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
-                        Registrarse <i class="fas fa-arrow-right ms-2"></i>
-                    </button>
-                </div>
-            </form>
-            
-            <div class="text-center mt-3">
-                <small class="text-muted">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia Sesión aquí.</a></small>
+        <!-- Mensajes de Error Globales (si hay) -->
+        {% if form.non_field_errors %}
+            <div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
             </div>
-        </div>
+        {% endif %}
+
+        <!-- Iterar sobre los campos del formulario -->
+        {% for field in form %}
+            <div class="relative">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ field.label }}
+                </label>
+                
+                <!-- CORRECCIÓN: Aplicamos las clases directamente al campo usando el filtro |attr o |add_class -->
+                {{ field|attr:'class:w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition duration-150' }}
+                
+                {% if field.errors %}
+                    <ul class="text-xs text-red-600 mt-1 space-y-0">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md transform hover:scale-[1.01]">
+            Crear Cuenta
+        </button>
+    </form>
+
+    <div class="mt-6 text-center text-sm text-gray-600">
+        ¿Ya tienes una cuenta? 
+        <a href="{% url 'accounts:login' %}" class="text-indigo-600 font-semibold hover:text-indigo-700 transition duration-150">
+            Inicia Sesión aquí
+        </a>
     </div>
 </div>
-{% endblock %}
+
+<!-- EL BLOQUE <style> CON @apply HA SIDO ELIMINADO COMPLETAMENTE -->
+{% endblock content %}

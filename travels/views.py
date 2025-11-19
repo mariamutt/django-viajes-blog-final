@@ -1,88 +1,62 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import (
-    ListView, 
-    DetailView, 
-    CreateView, 
-    UpdateView, 
-    DeleteView
-)
-from .models import TravelPost 
+from django.urls import reverse_lazy
+from django.db.models import Q
+from .models import TravelPost
+from .forms import PostForm  # <--- ¡AQUÍ ESTABA EL ERROR! Ahora coincide.
 
-# --- VISTAS BASADAS EN CLASES (CBVs) ---
-
-class TravelPostListView(ListView):
-    """Muestra una lista de todos los posts de viajes."""
+# Listado
+class PostListView(ListView):
     model = TravelPost
-    # CORRECCIÓN CLAVE: Aseguramos que apunte al archivo que creaste
-    template_name = 'travels/travelpost_list.html' 
+    template_name = 'travels/travelpost_list.html' # Asegúrate que el template se llame así
     context_object_name = 'posts'
-    ordering = ['-created_at'] 
-    paginate_by = 10
+    paginate_by = 6
 
-class TravelPostDetailView(DetailView):
-    """Muestra el detalle de un post individual usando el slug."""
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return TravelPost.objects.filter(
+                Q(title__icontains=query) | Q(subtitle__icontains=query)
+            ).order_by('-created_at')
+        return TravelPost.objects.all().order_by('-created_at')
+
+# Detalle
+class PostDetailView(DetailView):
     model = TravelPost
     template_name = 'travels/post_detail.html'
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
+    context_object_name = 'post'
 
-class TravelPostCreateView(LoginRequiredMixin, CreateView):
-    """Permite a un usuario autenticado crear un nuevo post."""
+# Creación
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = TravelPost
-    fields = ['title', 'content', 'location', 'image'] 
+    form_class = PostForm
     template_name = 'travels/post_form.html'
+    success_url = reverse_lazy('travels:list')
 
     def form_valid(self, form):
-        # Asigna automáticamente el usuario que está logueado como autor
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-class TravelPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """Permite al autor de un post actualizarlo."""
+# Edición
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TravelPost
-    fields = ['title', 'content', 'location', 'image']
+    form_class = PostForm
     template_name = 'travels/post_form.html'
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-
-    def test_func(self):
-        # Verifica que solo el autor pueda editar el post
-        post = self.get_object()
-        return self.request.user == post.author
-
-class TravelPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """Permite al autor de un post eliminarlo."""
-    model = TravelPost
-    template_name = 'travels/post_confirm_delete.html' 
-    success_url = '/travels/' # Redirige a la lista general después de borrar
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-
-    def test_func(self):
-        # Verifica que solo el autor pueda eliminar el post
-        post = self.get_object()
-        return self.request.user == post.author
-
-# --- VISTA BASADA EN FUNCIÓN PARA LISTAR POSTS POR USUARIO ---
-
-def user_post_list_view(request, user_id):
-    """
-    Función requerida por el patrón de URL 'travels:user_posts'.
-    Lista todos los posts creados por el usuario con el ID proporcionado.
-    """
     
-    target_user = get_object_or_404(User, id=user_id)
+    def get_success_url(self):
+        return reverse_lazy('travels:detail', kwargs={'pk': self.object.pk})
 
-    # Filtramos por el modelo TravelPost
-    user_posts = TravelPost.objects.filter(author=target_user).order_by('-created_at')
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
 
-    context = {
-        'target_user': target_user,
-        'posts': user_posts,
-        'page_title': f'Posts de {target_user.username}',
-    }
+# Borrado
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = TravelPost
+    template_name = 'travels/post_confirm_delete.html'
+    success_url = reverse_lazy('travels:list')
 
-    # Asegúrate de que esta plantilla exista
-    return render(request, 'travels/user_posts_list.html', context)
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author

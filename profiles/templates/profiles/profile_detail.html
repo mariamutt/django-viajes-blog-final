@@ -1,91 +1,60 @@
-{% extends 'base.html' %}
-{% load static widget_tweaks %}
+{% extends "base.html" %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}Perfil de {{ target_user.username }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container mt-4">
     <div class="row">
-        <!-- Columna de Perfil Principal -->
-        <div class="col-lg-4 col-md-5">
-            <div class="card shadow-sm border-0 mb-4 sticky-top" style="top: 20px;">
-                <div class="card-body text-center">
-                    
-                    <!-- Foto de Perfil -->
-                    <img src="{{ profile.avatar.url }}" 
-                         alt="Foto de Perfil de {{ target_user.username }}" 
-                         class="rounded-circle mb-3 object-fit-cover" 
-                         style="width: 150px; height: 150px; border: 4px solid #4ade80;">
-
-                    <!-- Nombre de Usuario -->
-                    <h2 class="card-title fw-bold text-success">{{ target_user.username }}</h2>
-                    <p class="text-muted mb-3">{{ profile.location|default:"Ubicación no especificada" }}</p>
-                    
-                    <!-- Botón de Acción -->
-                    <div class="d-grid gap-2">
-                        {% if is_current_user %}
-                            <a href="{% url 'profiles:edit' %}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-pencil-square me-1"></i> Editar Perfil
-                            </a>
-                        {% else %}
-                            <!-- Si es otro usuario, aquí iría el botón de Seguir/Mensaje -->
-                            <button class="btn btn-outline-success btn-sm" disabled>
-                                <i class="bi bi-person-add me-1"></i> Seguir
-                            </button>
-                        {% endif %}
+        <div class="col-md-4 text-center">
+            <div class="card shadow-sm p-3">
+                {% if target_user.profile.avatar %}
+                    <img src="{{ target_user.profile.avatar.url }}" class="rounded-circle img-thumbnail mx-auto d-block" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-secondary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; font-size: 3rem;">
+                        {{ target_user.username|slice:":1"|upper }}
                     </div>
-                </div>
+                {% endif %}
                 
-                <!-- Información Adicional -->
-                <div class="card-footer bg-light border-0">
-                    <h5 class="fw-bold mb-2">Acerca de mí:</h5>
-                    <p class="card-text text-start small text-dark-emphasis">
-                        {% if profile.bio %}
-                            {{ profile.bio|linebreaksbr }}
-                        {% else %}
-                            Aún no ha escrito su biografía. ¡Anímate a editar tu perfil!
-                        {% endif %}
-                    </p>
-                    <hr>
-                    <ul class="list-unstyled small text-start">
-                        <li><i class="bi bi-envelope-fill me-2 text-primary"></i> {{ target_user.email }}</li>
-                        {% if profile.website %}
-                        <li><i class="bi bi-globe me-2 text-warning"></i> <a href="{{ profile.website }}" target="_blank" class="text-decoration-none">{{ profile.website }}</a></li>
-                        {% endif %}
-                    </ul>
+                <h3 class="mt-3">{{ target_user.first_name }} {{ target_user.last_name }}</h3>
+                <p class="text-muted">@{{ target_user.username }}</p>
+                
+                {% if target_user.profile.location %}
+                    <p><i class="fas fa-map-marker-alt"></i> {{ target_user.profile.location }}</p>
+                {% endif %}
+
+                {% if user == target_user %}
+                    <a href="{% url 'profiles:edit' %}" class="btn btn-primary btn-sm w-100">Editar Perfil</a>
+                {% else %}
+                    <a href="{% url 'inbox:detail' target_user.username %}" class="btn btn-outline-primary btn-sm w-100">Enviar Mensaje</a>
+                {% endif %}
+            </div>
+
+            <div class="card mt-3 text-start">
+                <div class="card-body">
+                    <h5>Sobre mí</h5>
+                    <p>{{ target_user.profile.bio|default:"Sin biografía aún." }}</p>
+                    {% if target_user.profile.website %}
+                        <a href="{{ target_user.profile.website }}" target="_blank">Sitio Web</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Columna de Contenido y Posts -->
-        <div class="col-lg-8 col-md-7">
-            <h3 class="fw-bold mb-4 border-bottom pb-2">Posts Recientes ({{ target_user.travelpost_set.count }} en total)</h3>
-
-            {% if recent_posts %}
-                {% for post in recent_posts %}
-                    <div class="card shadow-sm mb-4 border-start border-4 border-primary">
-                        <div class="card-body">
-                            <h5 class="card-title fw-semibold text-truncate"><a href="{% url 'travels:detail' post.pk %}" class="text-decoration-none text-dark">{{ post.title }}</a></h5>
-                            <p class="card-text text-muted small mb-2">
-                                <i class="bi bi-clock me-1"></i> Publicado: {{ post.created_at|date:"d M, Y" }}
-                            </p>
-                            <p class="card-text">{{ post.content|striptags|truncatechars:150 }}</p>
-                            <a href="{% url 'travels:detail' post.pk %}" class="btn btn-outline-success btn-sm">Leer Más</a>
-                        </div>
+        <div class="col-md-8">
+            <h4 class="mb-3">Publicaciones de {{ target_user.username }}</h4>
+            {% if target_user.posts.all %}
+                {% for post in target_user.posts.all %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'travels:detail' post.pk %}" class="text-decoration-none">{{ post.title }}</a></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ post.created_at }}</h6>
+                        <p class="card-text">{{ post.content|striptags|truncatechars:100 }}</p>
                     </div>
+                </div>
                 {% endfor %}
-                
-                <!-- Enlace para ver todos los posts -->
-                <div class="text-center mt-4">
-                    <a href="{% url 'travels:list' %}" class="btn btn-outline-secondary">Ver todos los posts de {{ target_user.username }}</a>
-                </div>
-
             {% else %}
-                <div class="alert alert-info text-center" role="alert">
-                    Este viajero aún no ha compartido ninguna aventura.
-                </div>
+                <div class="alert alert-light">Este usuario no ha publicado nada aún.</div>
             {% endif %}
-
         </div>
     </div>
 </div>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Viajes</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuración de fuente y estilos base */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f9;
+        }
+        /* Estilos específicos para la modal */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5', /* Indigo-600 */
+                        'primary-light': '#eef2ff', /* Indigo-50 */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Encabezado de la Aplicación -->
+    <header class="bg-primary shadow-md">
+        <div class="max-w-6xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-bold text-white">✈️ Planificador de Viajes</h1>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal (Vista de Dashboard) -->
+    <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Mis Viajes</h2>
+
+        <!-- Grid para listar Viajes -->
+        <div id="viajes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Los cards de viaje se insertarán aquí por JavaScript -->
+            <p class="text-gray-500">Cargando viajes...</p>
+        </div>
+    </main>
+
+    <!-- -------------------------------------------------------------------------- -->
+    <!-- MODAL DE DETALLES DEL VIAJE (Oculto por defecto) -->
+    <!-- -------------------------------------------------------------------------- -->
+    <div id="trip-modal" class="fixed inset-0 z-50 hidden modal-overlay items-center justify-center p-4" aria-modal="true" role="dialog">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden transform transition-all duration-300">
+            
+            <!-- Contenedor de la Modal con Scroll -->
+            <div class="p-6 overflow-y-auto max-h-[90vh]">
+                
+                <div class="flex justify-between items-start border-b pb-4 mb-4 sticky top-0 bg-white z-10">
+                    <h3 id="modal-title" class="text-2xl font-bold text-gray-800">Detalles del Viaje</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <!-- Info General del Viaje -->
+                <div id="modal-trip-info" class="mb-6 p-4 bg-primary-light rounded-lg">
+                    <!-- Título, fechas y presupuesto se insertarán aquí -->
+                </div>
+
+                <!-- Lista de Actividades -->
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">Itinerario y Actividades</h4>
+                <div id="actividades-list" class="space-y-4">
+                    <!-- Las actividades se insertarán aquí -->
+                </div>
+
+                <!-- Formulario para Agregar Nueva Actividad -->
+                <h4 class="text-xl font-semibold text-gray-800 mt-8 mb-4 border-t pt-6">Añadir Nueva Actividad</h4>
+                <form id="add-activity-form" class="space-y-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+                    <input type="hidden" id="form-viaje-id">
+                    
+                    <div>
+                        <label for="actividad-nombre" class="block text-sm font-medium text-gray-700">Nombre de la Actividad</label>
+                        <input type="text" id="actividad-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary p-2 border">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="actividad-tipo" class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <select id="actividad-tipo" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary p-2 border">
+                                <option value="Alojamiento">Alojamiento</option>
+                                <option value="Vuelo">Vuelo</option>
+                                <option value="Atraccion">Atracción</option>
+                                <option value="Comida">Comida</option>
+                                <option value="Transporte">Transporte</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="actividad-fecha" class="block text-sm font-medium text-gray-700">Fecha</label>
+                            <input type="date" id="actividad-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary p-2 border">
+                        </div>
+                        <div>
+                            <label for="actividad-costo" class="block text-sm font-medium text-gray-700">Costo (€)</label>
+                            <input type="number" id="actividad-costo" value="0.00" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary p-2 border">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full justify-center mt-4 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary hover:bg-indigo-700 transition duration-150">
+                        Añadir al Itinerario
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- -------------------------------------------------------------------------- -->
+    <!-- FIN MODAL -->
+    <!-- -------------------------------------------------------------------------- -->
+
+    <script>
+        // Simulación de los modelos Viaje y Actividad en JavaScript
+        let currentTripId = null;
+
+        /**
+         * Simulación de los modelos de datos.
+         * En una aplicación real, esta data vendría de Firestore o una API.
+         */
+        const viajesData = [
+            { 
+                id: 1, 
+                nombre: "Escapada a Kioto", 
+                fecha_inicio: "2024-10-15", 
+                fecha_fin: "2024-10-25", 
+                presupuesto: 2500,
+                estado: "Activo"
+            },
+            { 
+                id: 2, 
+                nombre: "Ruta Andaluza", 
+                fecha_inicio: "2025-03-01", 
+                fecha_fin: "2025-03-08", 
+                presupuesto: 900,
+                estado: "Planeado"
+            },
+            { 
+                id: 3, 
+                nombre: "Nueva York Navideño", 
+                fecha_inicio: "2023-12-10", 
+                fecha_fin: "2023-12-17", 
+                presupuesto: 1800,
+                estado: "Completado"
+            }
+        ];
+
+        const actividadesData = [
+            // Actividades para Viaje 1 (Kioto)
+            { id: 101, viaje_id: 1, nombre: "Vuelo Madrid-Osaka", tipo: "Vuelo", fecha_actividad: "2024-10-15", costo: 650 },
+            { id: 102, viaje_id: 1, nombre: "Alojamiento Hotel Granvia", tipo: "Alojamiento", fecha_actividad: "2024-10-15", costo: 900 },
+            { id: 103, viaje_id: 1, nombre: "Visita al Templo Fushimi Inari", tipo: "Atraccion", fecha_actividad: "2024-10-16", costo: 5 },
+            // Actividades para Viaje 2 (Andaluza)
+            { id: 201, viaje_id: 2, nombre: "Tren AVE Sevilla-Granada", tipo: "Transporte", fecha_actividad: "2025-03-04", costo: 80 },
+            { id: 202, viaje_id: 2, nombre: "Hotel Meliá Sevilla", tipo: "Alojamiento", fecha_actividad: "2025-03-01", costo: 400 },
+        ];
+
+
+        // --------------------------------------------------------------------------
+        // LÓGICA DE RENDERING DE VISTAS
+        // --------------------------------------------------------------------------
+
+        /**
+         * Renderiza la lista de todos los viajes en el dashboard.
+         */
+        function renderViajesList() {
+            const container = document.getElementById('viajes-list');
+            container.innerHTML = ''; // Limpiar lista
+
+            if (viajesData.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full">No hay viajes planeados. ¡Empieza uno!</p>';
+                return;
+            }
+
+            viajesData.forEach(viaje => {
+                // Determinar el color del estado
+                let statusColor = 'bg-gray-500';
+                if (viaje.estado === 'Planeado') {
+                    statusColor = 'bg-blue-500';
+                } else if (viaje.estado === 'Activo') {
+                    statusColor = 'bg-green-500';
+                } else if (viaje.estado === 'Completado') {
+                    statusColor = 'bg-indigo-500';
+                }
+
+                // Generar el HTML de la tarjeta
+                const cardHtml = `
+                    <div onclick="openModal(${viaje.id})" 
+                         class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 transform hover:translate-y-[-2px] cursor-pointer border-t-4 border-primary">
+                        
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-gray-900 truncate">${viaje.nombre}</h3>
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full text-white ${statusColor} ml-4">${viaje.estado}</span>
+                        </div>
+
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p><strong>Inicio:</strong> ${new Date(viaje.fecha_inicio).toLocaleDateString()}</p>
+                            <p><strong>Fin:</strong> ${new Date(viaje.fecha_fin).toLocaleDateString()}</p>
+                            <p><strong>Presupuesto:</strong> ${formatCurrency(viaje.presupuesto)}</p>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <span class="text-xs text-primary font-medium">Ver detalles &rarr;</span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        /**
+         * Renderiza los detalles del viaje y sus actividades en la modal.
+         * @param {number} viajeId - El ID del viaje a renderizar.
+         */
+        function renderTripDetails(viajeId) {
+            const viaje = viajesData.find(v => v.id === viajeId);
+            if (!viaje) return;
+
+            // 1. Actualizar el título y la info general
+            document.getElementById('modal-title').textContent = viaje.nombre;
+            document.getElementById('form-viaje-id').value = viajeId;
+
+            const infoHtml = `
+                <p class="text-lg font-bold text-gray-800 mb-2">${viaje.nombre}</p>
+                <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                    <p><strong>Fechas:</strong> ${new Date(viaje.fecha_inicio).toLocaleDateString()} - ${new Date(viaje.fecha_fin).toLocaleDateString()}</p>
+                    <p><strong>Presupuesto Total:</strong> ${formatCurrency(viaje.presupuesto)}</p>
+                    <p><strong>Días:</strong> ${calculateDays(viaje.fecha_inicio, viaje.fecha_fin)}</p>
+                    <p><strong>Estado:</strong> <span class="font-semibold">${viaje.estado}</span></p>
+                </div>
+            `;
+            document.getElementById('modal-trip-info').innerHTML = infoHtml;
+            
+            // 2. Renderizar la lista de actividades
+            const actividadesContainer = document.getElementById('actividades-list');
+            actividadesContainer.innerHTML = '';
+            
+            // Filtrar y ordenar actividades por fecha
+            const actividadesViaje = actividadesData
+                .filter(a => a.viaje_id === viajeId)
+                .sort((a, b) => new Date(a.fecha_actividad) - new Date(b.fecha_actividad));
+
+            if (actividadesViaje.length === 0) {
+                actividadesContainer.innerHTML = '<p class="text-gray-500 p-4 border rounded-lg">Aún no hay actividades en este itinerario.</p>';
+                return;
+            }
+
+            actividadesViaje.forEach(actividad => {
+                const icon = getActividadIcon(actividad.tipo);
+                const itemHtml = `
+                    <div class="flex items-start p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="flex-shrink-0 mr-4 text-primary">${icon}</div>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-gray-900">${actividad.nombre}</p>
+                            <p class="text-sm text-gray-600">
+                                ${actividad.tipo} &bull; 
+                                ${new Date(actividad.fecha_actividad).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <div class="text-right flex-shrink-0 ml-4">
+                            <span class="font-medium text-sm text-gray-800">${formatCurrency(actividad.costo)}</span>
+                        </div>
+                    </div>
+                `;
+                actividadesContainer.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        }
+        
+        // --------------------------------------------------------------------------
+        // LÓGICA DE INTERACCIÓN (Modal y Formularios)
+        // --------------------------------------------------------------------------
+
+        /**
+         * Abre la modal con los detalles del viaje.
+         * @param {number} id - ID del viaje.
+         */
+        function openModal(id) {
+            currentTripId = id;
+            renderTripDetails(id);
+            document.getElementById('trip-modal').classList.remove('hidden');
+            document.getElementById('trip-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Evitar scroll en el body
+        }
+
+        /**
+         * Cierra la modal.
+         */
+        function closeModal() {
+            document.getElementById('trip-modal').classList.add('hidden');
+            document.getElementById('trip-modal').classList.remove('flex');
+            document.body.style.overflow = ''; // Restaurar scroll del body
+            currentTripId = null;
+        }
+
+        /**
+         * Maneja el envío del formulario para agregar una nueva actividad.
+         * En un entorno real, esta función haría una llamada a la API de la base de datos.
+         */
+        document.getElementById('add-activity-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const viajeId = parseInt(document.getElementById('form-viaje-id').value);
+            const nombre = document.getElementById('actividad-nombre').value;
+            const tipo = document.getElementById('actividad-tipo').value;
+            const fecha_actividad = document.getElementById('actividad-fecha').value;
+            const costo = parseFloat(document.getElementById('actividad-costo').value) || 0;
+
+            // Simulación de la creación de un nuevo ID
+            const newId = Math.max(...actividadesData.map(a => a.id), 0) + 1;
+
+            const newActividad = {
+                id: newId,
+                viaje_id: viajeId,
+                nombre: nombre,
+                tipo: tipo,
+                fecha_actividad: fecha_actividad,
+                costo: costo,
+                ubicacion: null, // Simplificado
+                notas: ""      // Simplificado
+            };
+
+            // Simulación de guardar en la "base de datos"
+            actividadesData.push(newActividad);
+            
+            // Recargar la vista de detalles para mostrar la nueva actividad
+            renderTripDetails(viajeId);
+            
+            // Resetear el formulario
+            this.reset();
+            
+            // Mensaje de feedback (usando un simple console.log en lugar de alert/modal)
+            console.log(`Actividad '${nombre}' añadida al viaje ${viajeId}.`);
+        });
+
+        // --------------------------------------------------------------------------
+        // UTILIDADES
+        // --------------------------------------------------------------------------
+
+        /**
+         * Formatea un número como moneda (Euro).
+         */
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-ES', { 
+                style: 'currency', 
+                currency: 'EUR' 
+            }).format(amount);
+        }
+
+        /**
+         * Calcula los días entre dos fechas.
+         */
+        function calculateDays(start, end) {
+            const oneDay = 24 * 60 * 60 * 1000; // horas*min*seg*miliseg
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diffDays = Math.round(Math.abs((startDate - endDate) / oneDay));
+            return diffDays + 1; // +1 para incluir el día de inicio
+        }
+
+        /**
+         * Retorna un ícono SVG basado en el tipo de actividad.
+         */
+        function getActividadIcon(type) {
+            switch(type) {
+                case 'Alojamiento':
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10"/><path d="M2 10.6L12 2l10 8.6"/></svg>'; // Casa
+                case 'Vuelo':
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H4L2 5v14l2-2z"/><path d="M12 17v4m-3-4v4m6-4v4"/></svg>'; // Avión (Ticket)
+                case 'Atraccion':
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'; // Reloj (Atracción/Tiempo)
+                case 'Comida':
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21v-4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4M12 2v20"/></svg>'; // Tenedor y Cuchillo
+                case 'Transporte':
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4-4v8"/></svg>'; // Coche/Bus (Direcciones)
+                default:
+                    return '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'; // Genérico
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        // INICIALIZACIÓN
+        // --------------------------------------------------------------------------
+        window.onload = renderViajesList;
+    </script>
+</body>
+</html>
